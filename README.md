@@ -3,7 +3,7 @@ Post-Exploitation methods inside any extension
 
 
 ## How To Install/Test?
-1. Select an Post-Exploitation module (i.e: tabs / mail / proxy / storage / etc).
+1. Select an Post-Exploitation module (i.e: tabs / mail / proxy / fs / etc).
 2. Configure Post-Exploit arguments (variables at the begining).
 3. Inject this module as script in background context.  
 

