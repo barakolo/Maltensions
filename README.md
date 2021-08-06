@@ -31,7 +31,7 @@ Developers assume no liability and are not responsible for any misuse or damage 
 *For real - this is only for educational purposes & not for harm to be done anywhere!!!
 
 
-# EXTRA INFO ON MODULES & SOME REQUIREMENTS
+## EXTRA INFO ON MODULES & SOME REQUIREMENTS
 
 ## Background extraction
 1. Main Required permissions: tabs
