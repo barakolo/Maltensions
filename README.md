@@ -30,6 +30,9 @@ Developers assume no liability and are not responsible for any misuse or damage 
 
 *For real - this is only for educational purposes & not for harm to be done anywhere!!!
 
+
+# EXTRA INFO ON MODULES & SOME REQUIREMENTS
+
 ## Background extraction
 1. Main Required permissions: tabs
 2. The technique: Inject dynamic code to "steal" all info and return it back to background context with messaging, that way, users and sites aren't aware of data extraction (DevTools is empty), and the background context can send this data at arbtirary times when he is choosing to.
@@ -39,15 +42,12 @@ chrome.tabs.executeScript(tabId= 1000, {code:"alert()", allFrames: true})
 ```
 
 * In Manifest V3: tabs, scripting. 
-* Even though mv3 doesn't natively support script execution - This is manifest-v3 compatible also (using function definition). 
-* 		
-
+* Even though mv3 doesn't natively support script execution - This is manifest-v3 compatible also (using function definition).  		
 * Tracking newly opened tabs:
 chrome.tabs.onCreated.addListener(e=>console.log("New tab opened, ID=" + e.id + ", JSON Printing:" + JSON.stringify(e)));
-* 
 
 
-* Bonus - Hidden techniques for MV3:
+## Bonus - Hidden Eval techniques for MV3:
 
 1. Dynamic code execution from background: 
  ```
@@ -71,18 +71,5 @@ chrome.tabs.onCreated.addListener(e=>console.log("New tab opened, ID=" + e.id + 
     });
 ```
 
-## Persistency & Configuration Features
-Depending on the method of 
-
-This example injects new configuration variable inside the background context of arbitrary extension.
-
-The name of the configuration is configurable.
-
-
-## Encrypted Storage & C&C
-
-
 
 ## Proxy Communication
-
-Dependant on m
