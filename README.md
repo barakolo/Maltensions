@@ -1,13 +1,34 @@
 # Maltensions
-Post-Exploitation methods inside any extension
+This is A BETA-Version for Maltensions -> Post-Exploitation methods inside any .extension
+
 
 
 ## How To Install/Test?
 1. Select an Post-Exploitation module (i.e: tabs / mail / proxy / fs / etc).
-2. Configure Post-Exploit arguments (variables at the begining).
-3. Inject this module as script in background context.  
+2. Configure Post-Exploit arguments (args like cc-server and such).
+3. Inject this module as script in background context (unpacked-mode / inside other extension with xss & such).
 
-python3 compile_maltension.py <modules_list> -p <persistent - yes/no> -r <remote_cc_server> -u <malware_update_url> -f <output_format = file=pack=chrome-extension-unpacked-package/inj=Injectable-JS>
+* Compile maltension JS file with (BETA VERSION ONLY - listens over localhost:8080):
+```
+python3 maltension.py -m mail tabs proxy fs 
+```
+* Run The simple C&C Server with (for example - listens on localhost:8080):
+```
+python3 server.py -p8080
+```
+
+## NOTES
+* The output will be in malty folder under background.js filename.
+* For more arguments & explanations, place the arg "--help" and see the results.  
+* Look also at the modules folder JS files - that contains the real deal kinda :)
+* THIS IS BETA VERSION only - mainly focuses on showing the techniques & such... so yes yes yes - coolish bugs and such might exists inside... but you're welcome to help & continue developing this while giving proper credits & such - Thanks!!! :)
+* Please run inside some sadnbox or something like that, this tool is just for educational purposes only, author is not responsible for any damage.
+
+## LEGAL DISCLAIMER 
+Usage of Maltensions Tool for attacking targets without prior mutual consent is illegal. It's the end user's responsibility to obey all applicable local, state and federal laws. 
+Developers assume no liability and are not responsible for any misuse or damage caused by this program. Only use for educational purposes.
+
+*For real - this is only for educational purposes & not for harm to be done anywhere!!!
 
 ## Background extraction
 1. Main Required permissions: tabs
